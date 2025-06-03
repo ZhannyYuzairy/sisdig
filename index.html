@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Monitoring Sensor Pintu</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Smart Office Room</h2>
+
+    <table>
+      <tbody>
+        <tr>
+          <td>
+            <div class="data-block">
+              <div class="data" id="temp">Suhu: -- °C</div>
+              <div class="data warning" id="tempWarning">Status suhu akan muncul di sini</div>
+            </div>
+          </td>
+          <td>
+            <div class="data-block">
+              <div class="data" id="dist">Jarak: -- cm</div>
+              <div class="data warning" id="distWarning">Status jarak akan muncul di sini</div>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <div class="data-block">
+              <div class="data" id="hum">Kelembapan: -- %</div>
+              <div class="data warning" id="humWarning">Status kelembapan akan muncul di sini</div>
+            </div>
+          </td>
+          <td>
+            <div class="data-block">
+              <div class="data" id="ldr">Cahaya: -- Lux</div>
+              <div class="data warning" id="ldrWarning">Status cahaya akan muncul di sini</div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="data" id="btn">Tombol: --</div>
+
+    <div class="button-group">
+        <button onclick="connectSerial()">🔌 Hubungkan Serial</button>
+
+        <button onclick="sendCommand('LED_ON')">🔴 Nyalakan LED Merah</button>
+        <button onclick="sendCommand('LED_OFF')">⚪ Matikan LED Merah</button>
+    </div>
+
+
+  <script src="script.js"></script>
+</body>
+</html>
