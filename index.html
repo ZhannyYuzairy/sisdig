@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Monitoring Sensor Pintu</title>
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <script>
+    // Konfigurasi Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyABUhatkqnVKHNHgUGLjHlgdjVqrC5oU_M",
+      databaseURL: "https://smart-office-room-default-rtdb.asia-southeast1.firebasedatabase.app/"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+  </script>
 </head>
 <body>
   <div class="container">
@@ -47,12 +61,11 @@
     <div class="data" id="btn">Tombol: --</div>
 
     <div class="button-group">
-        <button onclick="connectSerial()">🔌 Hubungkan Serial</button>
-
-        <button onclick="sendCommand('LED_ON')">🔴 Nyalakan LED Merah</button>
-        <button onclick="sendCommand('LED_OFF')">⚪ Matikan LED Merah</button>
+      <button onclick="connectSerial()">🔌 Hubungkan Serial</button>
+      <button onclick="sendCommand('LED_ON')">🔴 Nyalakan LED Merah</button>
+      <button onclick="sendCommand('LED_OFF')">⚪ Matikan LED Merah</button>
     </div>
-
+  </div>
 
   <script src="script.js"></script>
 </body>

@@ -1,9 +1,9 @@
 let port;
 let reader;
 
-// Atur batas minimal suhu dan kelembapan
-const MIN_TEMP = 20;  // derajat Celcius
-const MIN_HUM = 30;   // persen
+// Batas minimum
+const MIN_TEMP = 20;
+const MIN_HUM = 30;
 
 async function connectSerial() {
   try {
@@ -36,9 +36,6 @@ async function readLoop() {
 }
 
 function updateUI(line) {
-  // Contoh data:
-  // Temp: 27.3 C, Hum: 60 %, Dist: 123 cm, LDR: 300, Button: ON
-
   const tempMatch = line.match(/Temp:\s*([\d.]+)/);
   const humMatch = line.match(/Hum:\s*([\d.]+)/);
   const distMatch = line.match(/Dist:\s*([\d.]+)/);
@@ -48,76 +45,59 @@ function updateUI(line) {
   let tempValue = null;
   let humValue = null;
 
-  // Suhu
   if (tempMatch) {
     tempValue = parseFloat(tempMatch[1]);
     document.getElementById("temp").textContent = "Suhu: " + tempValue + " °C";
 
     const tempWarning = document.getElementById("tempWarning");
-    if (tempValue < MIN_TEMP) {
-      tempWarning.textContent = "⚠️ Peringatan: Suhu di bawah batas minimum!";
-      tempWarning.style.color = "red";
-    } else {
-      tempWarning.textContent = "✅ Suhu dalam batas normal.";
-      tempWarning.style.color = "green";
-    }
+    tempWarning.textContent = tempValue < MIN_TEMP
+      ? "⚠️ Peringatan: Suhu di bawah batas minimum!"
+      : "✅ Suhu dalam batas normal.";
+    tempWarning.style.color = tempValue < MIN_TEMP ? "red" : "green";
   }
 
-  // Kelembapan
   if (humMatch) {
     humValue = parseFloat(humMatch[1]);
     document.getElementById("hum").textContent = "Kelembapan: " + humValue + " %";
 
     const humWarning = document.getElementById("humWarning");
-    if (humValue < MIN_HUM) {
-      humWarning.textContent = "⚠️ Peringatan: Kelembapan di bawah batas minimum!";
-      humWarning.style.color = "red";
-    } else {
-      humWarning.textContent = "✅ Kelembapan dalam batas normal.";
-      humWarning.style.color = "green";
-    }
+    humWarning.textContent = humValue < MIN_HUM
+      ? "⚠️ Peringatan: Kelembapan di bawah batas minimum!"
+      : "✅ Kelembapan dalam batas normal.";
+    humWarning.style.color = humValue < MIN_HUM ? "red" : "green";
   }
 
-  // Jarak
   if (distMatch) {
     const distValue = parseFloat(distMatch[1]);
     document.getElementById("dist").textContent = "Jarak: " + distValue + " cm";
 
     const distWarning = document.getElementById("distWarning");
-    if (distValue < 30) {
-      distWarning.textContent = "⚠️ Peringatan: Ada orang masuk!";
-      distWarning.style.color = "red";
-    } else {
-      distWarning.textContent = "✅ Aman, tidak ada orang.";
-      distWarning.style.color = "green";
-    }
+    distWarning.textContent = distValue < 30
+      ? "⚠️ Peringatan: Ada orang masuk!"
+      : "✅ Aman, tidak ada orang.";
+    distWarning.style.color = distValue < 30 ? "red" : "green";
   }
 
-  // Cahaya
   if (ldrMatch) {
     const ldrValue = parseInt(ldrMatch[1]);
     document.getElementById("ldr").textContent = "Cahaya: " + ldrValue;
 
     const ldrWarning = document.getElementById("ldrWarning");
-    if (ldrValue < 500) {
-      ldrWarning.textContent = "⚠️ Peringatan: Cahaya ruangan terlalu redup!";
-      ldrWarning.style.color = "red";
-    } else {
-      ldrWarning.textContent = "✅ Cahaya ruangan cukup.";
-      ldrWarning.style.color = "green";
-    }
+    ldrWarning.textContent = ldrValue < 500
+      ? "⚠️ Peringatan: Cahaya ruangan terlalu redup!"
+      : "✅ Cahaya ruangan cukup.";
+    ldrWarning.style.color = ldrValue < 500 ? "red" : "green";
   }
 
-  // Tombol manual
   if (btnMatch) {
     document.getElementById("btn").textContent = "Tombol: " + btnMatch[1];
   }
 }
 
-// Fungsi kirim perintah ke board
+// Kirim perintah ke board
 async function sendCommand(command) {
   if (!port || !port.writable) {
-    console.error("Port belum terbuka atau tidak tersedia.");
+    console.error("Port belum terbuka.");
     return;
   }
 
@@ -126,3 +106,17 @@ async function sendCommand(command) {
   await writer.write(data);
   writer.releaseLock();
 }
+
+// 🔁 Listen data dari Firebase
+window.addEventListener("DOMContentLoaded", () => {
+  const db = firebase.database();
+  const sensorRef = db.ref("sensor");
+
+  sensorRef.on("value", (snapshot) => {
+    const data = snapshot.val();
+    if (!data) return;
+
+    const line = `Temp: ${data.temperature} C, Hum: ${data.humidity} %, Dist: ${data.distance} cm, LDR: ${data.ldr}, Button: ${data.button ? 'ON' : 'OFF'}`;
+    updateUI(line);
+  });
+});
